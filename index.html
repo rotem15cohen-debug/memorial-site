@@ -19,7 +19,7 @@
             line-height: 1;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        /* עיצוב המסגרת העגולה - התאמה טבעית ללא מתיחה */
+        /* עיצוב המסגרת העגולה */
         .profile-image-container {
             width: 260px; 
             height: 260px;
@@ -36,14 +36,13 @@
             justify-content: center;
         }
         .profile-image-container img {
-            /* שימוש ב-max-width ו-max-height כדי להבטיח שהתמונה לא תימתח */
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
+            /* הגדלת התמונה כדי לצמצם את הרקע הלבן מסביב */
+            width: 115%; 
+            height: 115%;
             object-fit: contain;
-            /* ביטול כל סוג של טרנספורמציה או זום */
             transform: none; 
+            /* מעט ריכוך לקצוות התמונה שמשתלבים בלבן */
+            filter: brightness(1.02);
         }
         /* אנימציית נר */
         .flame {
@@ -75,12 +74,11 @@
         
         <div class="relative z-10 px-4 fade-in">
             <div class="profile-image-container">
-                <!-- התמונה תוצג עכשיו בגודלה הטבעי והמתאים בתוך העיגול -->
                 <img src="IMG_3910_Original.jpg" alt="אפרים רוטמן ז"ל" onerror="this.src='https://via.placeholder.com/260?text=%D7%AA%D7%9E%D7%95%D7%A0%D7%94'">
             </div>
 
             <h1 class="memorial-title mb-2">אפרים רוטמן ז"ל</h1>
-            <p class="text-2xl font-light opacity-90 mb-8 tracking-wider">2019 – 1935</p>
+            <p class="text-2xl font-light opacity-90 mb-8 tracking-wider">1935 – 2019</p>
             
             <div class="flex flex-col items-center">
                 <div class="flame mb-1"></div>
