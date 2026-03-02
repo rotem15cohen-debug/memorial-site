@@ -69,6 +69,64 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* נרות קטנים שנוספים */
+        .mini-candle-wrapper {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .mini-flame {
+            width: 8px;
+            height: 12px;
+            background: #ff9800;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 8px #ff9800;
+            animation: flicker 0.8s infinite alternate;
+        }
+        .mini-body {
+            width: 16px;
+            height: 25px;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+        .message-bubble {
+            position: absolute;
+            bottom: 45px;
+            background: white;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            pointer-events: none;
+            z-index: 20;
+        }
+        .message-bubble::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+
+        /* מודאל */
+        #candleModal {
+            display: none;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
         /* עיצוב ציר זמן */
         .timeline-container {
             position: relative;
@@ -79,7 +137,7 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            right: 18px; /* Alignment for mobile/rtl */
+            right: 18px;
             width: 2px;
             background: #e5e7eb;
         }
@@ -117,7 +175,6 @@
 
     <!-- Hero Section -->
     <header class="relative h-screen flex items-center justify-center text-center text-white bg-black overflow-hidden">
-        <!-- תמונת רקע - נוף יער ירוק -->
         <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" 
              class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105" alt="נוף יער ירוק">
         
@@ -143,7 +200,7 @@
         <a href="#biography" class="hover:text-amber-700 transition">סיפורו</a>
         <a href="#timeline" class="hover:text-amber-700 transition">ציר זמן</a>
         <a href="#gallery" class="hover:text-amber-700 transition">גלריה</a>
-        <a href="#memories" class="hover:text-amber-700 transition text-amber-800">זיכרונות</a>
+        <a href="#light-candle" class="hover:text-amber-700 transition text-amber-800 font-extrabold uppercase tracking-tighter">הדלקת נר</a>
     </nav>
 
     <main class="max-w-4xl mx-auto px-6 py-24">
@@ -155,11 +212,8 @@
                 <p class="mb-6 text-xl text-gray-800 leading-snug font-light">
                     אפרים רוטמן ז"ל, איש של עקרונות ושל חום, הקדיש את חייו למשפחתו ולסובבים אותו.
                 </p>
-                <p class="mb-4">
-                    סיפורו של אפרים הוא סיפור של דור שלם - דור של בוני הארץ, של עבודה קשה ושל ערכים שלא נס ליחם. הוא ידע למצוא את הטוב בכל אדם ואת היופי בכל רגע פשוט.
-                </p>
-                <p>
-                    כאן המקום לפרט על תחנות חייו: ילדותו, פועלו המקצועי, תחביביו והמורשת שהשאיר אחריו לילדיו ולנכדיו.
+                <p class="mb-4 text-lg">
+                    כאן המקום להוסיף את סיפור חייו של אפרים. אדם של עבודה, משפחה וערכים.
                 </p>
                 <div class="mt-8 pt-6 border-t border-gray-100 font-bold text-amber-800 italic text-center text-2xl font-serif">
                     "החיוך שלו האיר כל חדר אליו נכנס."
@@ -171,8 +225,6 @@
         <section id="timeline" class="mb-32">
             <h2 class="section-title text-4xl font-bold text-gray-800">תחנות בחייו</h2>
             <div class="timeline-container mt-12">
-                
-                <!-- Timeline Item 1 -->
                 <div class="timeline-item flex flex-col md:flex-row justify-between items-center w-full">
                     <div class="timeline-dot"></div>
                     <div class="hidden md:block w-[45%]"></div>
@@ -180,30 +232,21 @@
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
                             <span class="text-amber-700 font-bold text-xl">1935</span>
                             <h3 class="text-lg font-bold mt-1">לידה</h3>
-                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">אפרים נולד בתאריך... במקום...</p>
-                            <div class="mt-4 aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                                <div class="w-full h-full flex items-center justify-center text-gray-300 italic text-xs">כאן תוכל להוסיף תמונת ילדות</div>
-                            </div>
+                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">אפרים נולד ב...</p>
                         </div>
                     </div>
                 </div>
-
-                <!-- Timeline Item 2 -->
                 <div class="timeline-item flex flex-col md:flex-row-reverse justify-between items-center w-full">
                     <div class="timeline-dot"></div>
                     <div class="hidden md:block w-[45%]"></div>
                     <div class="w-full md:w-[45%] pr-12 md:pr-0 text-right md:text-left">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
-                            <span class="text-amber-700 font-bold text-xl">שנות ה-50</span>
-                            <h3 class="text-lg font-bold mt-1">הקמת המשפחה</h3>
-                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">תקופה משמעותית של בנייה ועשייה...</p>
-                            <div class="mt-4 aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                                <div class="w-full h-full flex items-center justify-center text-gray-300 italic text-xs">כאן תוכל להוסיף תמונה מהתקופה</div>
-                            </div>
+                            <span class="text-amber-700 font-bold text-xl">2019</span>
+                            <h3 class="text-lg font-bold mt-1">פטירה</h3>
+                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">נפרדנו מאפרים בתאריך...</p>
                         </div>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -223,30 +266,43 @@
             </div>
         </section>
 
-        <!-- Memories -->
-        <section id="memories" class="bg-amber-50/40 p-10 md:p-16 rounded-[3rem] border border-amber-100 shadow-inner">
-            <h2 class="section-title text-4xl font-bold text-gray-800">כותבים לזכרו</h2>
-            <p class="text-gray-600 mb-10 text-xl italic">ספרו סיפור, העלו זיכרון או הקדישו מילים לסבא אפרים ז"ל.</p>
+        <!-- Candle Lighting Section -->
+        <section id="light-candle" class="bg-stone-900 p-10 md:p-16 rounded-[3rem] text-white text-center shadow-2xl overflow-hidden relative">
+            <div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-500 via-transparent to-transparent"></div>
             
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden min-h-[600px] border border-gray-100">
-                <iframe 
-                    id="memoriesForm"
-                    src="https://docs.google.com/forms/d/e/1FAIpQLScyW6-G_X_YOUR_FORM_ID/viewform?embedded=true" 
-                    width="100%" 
-                    height="650" 
-                    frameborder="0" 
-                    marginheight="0" 
-                    marginwidth="0">טוען...</iframe>
+            <h2 class="text-4xl font-bold mb-4 relative z-10">הדליקו נר לזכרו</h2>
+            <p class="text-stone-400 mb-8 max-w-md mx-auto relative z-10">כל לחיצה על הכפתור מוסיפה נר דולק לאתר, לזכר נשמתו של אפרים ז"ל.</p>
+            
+            <div class="mb-8 relative z-10">
+                <span class="text-stone-500 text-sm block mb-2 uppercase tracking-widest">נרות שהודלקו עד כה</span>
+                <span id="candleCount" class="text-5xl font-serif text-amber-500 tracking-tighter">0</span>
             </div>
 
-            <div class="mt-12 flex flex-col items-center gap-6">
-                <button onclick="shareMemory()" class="bg-emerald-600 text-white px-10 py-5 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 transform hover:-translate-y-1">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.161 1.237 8.404 3.48s3.48 5.228 3.48 8.404c0 6.556-5.332 11.888-11.888 11.888-2.016 0-3.991-.512-5.742-1.487l-6.141 1.612zm6.305-16.144c-.161-.358-.33-.366-.484-.372-.126-.005-.27-.005-.414-.005-.144 0-.378.054-.576.27-.198.216-.756.738-.756 1.799s.774 2.088.882 2.232c.108.144 1.521 2.322 3.684 3.257.514.222.915.355 1.227.454.516.164.986.141 1.357.086.414-.061 1.275-.521 1.455-1.023.18-.502.18-.933.126-1.023-.054-.09-.198-.144-.414-.252s-1.275-.629-1.472-.701-.342-.108-.486.108c-.144.216-.558.701-.684.846-.126.144-.252.162-.468.054s-.911-.336-1.735-1.071c-.642-.572-1.074-1.279-1.2-1.494-.126-.216-.013-.333.095-.44l.324-.378c.108-.126.144-.216.216-.36s.036-.27-.018-.378z"/></svg>
-                    שתפו זיכרון בוואטסאפ המשפחתי
-                </button>
+            <button onclick="openCandleModal()" class="group relative z-10 bg-amber-600 hover:bg-amber-500 text-white px-12 py-6 rounded-full font-bold transition-all transform active:scale-95 flex items-center justify-center gap-4 mx-auto shadow-lg shadow-amber-900/40">
+                <div class="flame !w-[10px] !h-[18px]"></div>
+                <span>הדלקת נר נשמה</span>
+            </button>
+
+            <!-- נרות דולקים -->
+            <div id="candleContainer" class="mt-12 flex flex-wrap justify-center min-h-[150px] items-end">
+                <!-- נרות יתווספו כאן -->
             </div>
         </section>
     </main>
+
+    <!-- Modal for candle message -->
+    <div id="candleModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl scale-in transform transition-all">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">הדלקת נר לזכרו</h3>
+            <p class="text-gray-500 mb-6 text-sm">תוכלו להוסיף מילה או הקדשה קצרה שתופיע מעל הנר.</p>
+            <input type="text" id="candleMsg" maxlength="25" placeholder="למשל: תמיד בלב... (אופציונלי)" 
+                class="w-full p-4 border border-gray-200 rounded-xl mb-4 text-center focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <div class="flex gap-3">
+                <button onclick="closeCandleModal()" class="flex-1 py-4 text-gray-400 font-bold hover:text-gray-600 transition">ביטול</button>
+                <button onclick="confirmAddCandle()" class="flex-1 py-4 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 shadow-md">הדלקה</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="py-20 bg-gray-950 text-white text-center">
         <div class="opacity-80 font-light">
@@ -257,11 +313,71 @@
     </footer>
 
     <script>
-        function shareMemory() {
-            const url = window.location.href;
-            const text = encodeURIComponent("רציתי לשתף זיכרון על אפרים רוטמן ז\"ל מתוך אתר ההנצחה: " + url);
-            window.open(`https://wa.me/?text=${text}`, '_blank');
+        // ניהול המונה והנרות
+        let count = parseInt(localStorage.getItem('memorial_candles_v2') || '0');
+        let candlesData = JSON.parse(localStorage.getItem('memorial_candles_data') || '[]');
+        
+        const countDisplay = document.getElementById('candleCount');
+        const container = document.getElementById('candleContainer');
+        const modal = document.getElementById('candleModal');
+        const input = document.getElementById('candleMsg');
+
+        function initCandles() {
+            countDisplay.innerText = count;
+            // מציגים רק את ה-50 האחרונים כדי לא להעמיס את הדף
+            const recentCandles = candlesData.slice(-50);
+            recentCandles.forEach(data => {
+                createCandleElement(data.message);
+            });
         }
+
+        function createCandleElement(message) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mini-candle-wrapper';
+            
+            let html = '<div class="mini-flame"></div><div class="mini-body"></div>';
+            if (message && message.trim() !== "") {
+                html = `<div class="message-bubble">${message}</div>` + html;
+            }
+            
+            wrapper.innerHTML = html;
+            container.appendChild(wrapper);
+        }
+
+        function openCandleModal() {
+            modal.style.display = 'flex';
+            input.focus();
+        }
+
+        function closeCandleModal() {
+            modal.style.display = 'none';
+            input.value = '';
+        }
+
+        function confirmAddCandle() {
+            const msg = input.value.trim();
+            count++;
+            
+            // שמירת נתונים
+            const newCandle = { message: msg, time: Date.now() };
+            candlesData.push(newCandle);
+            if (candlesData.length > 50) candlesData.shift(); // שמירת היסטוריה מוגבלת
+            
+            localStorage.setItem('memorial_candles_v2', count);
+            localStorage.setItem('memorial_candles_data', JSON.stringify(candlesData));
+            
+            countDisplay.innerText = count;
+            createCandleElement(msg);
+            
+            closeCandleModal();
+        }
+
+        // סגירת מודאל בלחיצה בחוץ
+        window.onclick = function(event) {
+            if (event.target == modal) closeCandleModal();
+        }
+
+        window.onload = initCandles;
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
