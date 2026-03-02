@@ -19,27 +19,29 @@
             line-height: 1;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        /* עיצוב המסגרת העגולה - התאמה לתמונה המקורית */
+        /* עיצוב המסגרת העגולה - התאמה מושלמת ללא מתיחה */
         .profile-image-container {
-            width: 240px;
-            height: 240px;
+            width: 260px; /* הגדלתי מעט את העיגול שיהיה ברור יותר */
+            height: 260px;
             margin: 0 auto 30px;
             border-radius: 50%;
-            border: 6px solid white;
-            background: #fff;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.3);
+            border: 4px solid white;
+            background: #ffffff; /* רקע לבן נקי מאחורי התמונה */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             overflow: hidden;
             position: relative;
             z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .profile-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* מיקום המצלמה על פניו של אפרים בתמונה הקבוצתית */
-            object-position: 50% 18%;
-            /* זום פנימה כדי שהפנים ימלאו את העיגול */
-            transform: scale(2.8); 
+            /* object-fit: contain מבטיח שכל התמונה תיכנס לעיגול בלי להימתח ובלי להיגזר */
+            width: 95%; /* משאיר מרווח לבן קטן ואסתטי מהקצוות */
+            height: 95%;
+            object-fit: contain;
+            /* ביטול כל סוג של זום או הגדלה */
+            transform: scale(1); 
         }
         /* אנימציית נר */
         .flame {
@@ -65,24 +67,24 @@
 <body>
 
     <header class="relative h-[90vh] flex items-center justify-center text-center text-white bg-stone-900 overflow-hidden">
-        <!-- תמונת רקע אווירתית -->
+        <!-- תמונת רקע של יער - כפי שמופיע באתר שלך -->
         <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" 
-             class="absolute inset-0 w-full h-full object-cover opacity-40 scale-105" alt="רקע">
-        <div class="absolute inset-0 bg-black/20 z-0"></div>
+             class="absolute inset-0 w-full h-full object-cover opacity-40" alt="רקע">
+        <div class="absolute inset-0 bg-black/10 z-0"></div>
         
         <div class="relative z-10 px-4 fade-in">
             <div class="profile-image-container">
-                <!-- שימוש בתמונה המקורית כפי שהעלת ל-GitHub -->
-                <img src="IMG_3910_Original.jpg" alt="אפרים רוטמן ז"ל" onerror="this.src='https://via.placeholder.com/240?text=%D7%AA%D7%9E%D7%95%D7%A0%D7%94'">
+                <!-- שימוש בתמונה המקורית שצירפת בשם הנכון -->
+                <img src="IMG_3910_Original.jpg" alt="אפרים רוטמן ז"ל" onerror="this.src='https://via.placeholder.com/260?text=%D7%AA%D7%9E%D7%95%D7%A0%D7%94'">
             </div>
 
             <h1 class="memorial-title mb-2">אפרים רוטמן ז"ל</h1>
-            <p class="text-2xl font-light opacity-90 mb-8 tracking-wider">1935 – 2019</p>
+            <p class="text-2xl font-light opacity-90 mb-8 tracking-wider">2019 – 1935</p>
             
             <div class="flex flex-col items-center">
                 <div class="flame mb-1"></div>
                 <div class="candle-body"></div>
-                <p class="mt-6 text-sm tracking-[0.4em] opacity-50 font-light">נזכור לעולם</p>
+                <p class="mt-6 text-sm tracking-[0.4em] opacity-50 font-light uppercase">נזכור לעולם</p>
             </div>
         </div>
     </header>
