@@ -27,17 +27,17 @@
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
         .gallery-item { 
             border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); aspect-ratio: 4/5; 
-            background-color: #efefef; /* רקע ניטרלי למילוי שטחים ריקים */
+            background-color: #f3f3f3; 
             display: flex; align-items: center; justify-content: center; transition: transform 0.4s ease;
+            position: relative;
         }
         .gallery-item:hover { transform: translateY(-5px); }
+        .gallery-item img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
         
-        /* תיקון: הצגת התמונה במלואה ללא חיתוך */
-        .gallery-item img { 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
-            display: block;
+        /* עיצוב במקרה של שגיאת תמונה */
+        .img-error-placeholder {
+            position: absolute; inset: 0; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; background: #eee; color: #aaa; font-size: 0.9rem;
         }
 
         #dedication-modal { display: none; opacity: 0; transition: opacity 0.3s ease; }
@@ -58,7 +58,6 @@
 
         let currentUser = null;
 
-        // Initialize Auth
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -66,9 +65,7 @@
                 } else {
                     await signInAnonymously(auth);
                 }
-            } catch (error) {
-                console.error("Auth error:", error);
-            }
+            } catch (error) { console.error("Auth error:", error); }
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -80,25 +77,19 @@
 
         initAuth();
 
-        // Exposed Global UI Functions
+        // UI Functions - Exposed Globally
         window.openDedicationModal = () => {
-            const modal = document.getElementById('dedication-modal');
-            modal.classList.add('active');
+            document.getElementById('dedication-modal').classList.add('active');
         };
 
         window.closeDedicationModal = () => {
-            const modal = document.getElementById('dedication-modal');
-            modal.classList.remove('active');
+            document.getElementById('dedication-modal').classList.remove('active');
         };
 
         window.handleLightCandle = async () => {
-            if (!currentUser) {
-                alert("מתחבר למערכת, אנא נסו שנית בעוד רגע...");
-                return;
-            }
             const textInput = document.getElementById('dedication-text');
             const text = textInput.value.trim();
-            if (!text) return;
+            if (!text || !currentUser) return;
 
             const submitBtn = document.getElementById('submit-dedication-btn');
             submitBtn.disabled = true;
@@ -114,12 +105,12 @@
                 window.closeDedicationModal();
                 const lightBtn = document.getElementById('light-btn');
                 lightBtn.innerHTML = "🕯️ הנר הודלק בהצלחה";
-                lightBtn.classList.replace('bg-stone-800', 'bg-orange-600');
+                lightBtn.className = "bg-orange-600 text-white px-10 py-5 rounded-full text-lg font-bold shadow-xl flex items-center justify-center mx-auto gap-3 mb-12";
             } catch (e) {
                 console.error(e);
-                submitBtn.innerText = "שגיאה, נסה שוב";
             } finally {
                 submitBtn.disabled = false;
+                submitBtn.innerText = "הדלקת נר";
             }
         };
 
@@ -131,21 +122,29 @@
                 let docs = [];
                 snapshot.forEach(doc => docs.push(doc.data()));
                 docs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                
                 if (countBadge) countBadge.innerText = docs.length;
                 
                 if (docs.length === 0) {
                     list.innerHTML = '<p class="text-stone-400 italic text-center py-4">היו הראשונים להדליק נר ולהקדיש מילה...</p>';
                     return;
                 }
-
                 list.innerHTML = docs.map(d => `
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-100 mb-4 text-right">
                         <p class="text-stone-700 font-light leading-relaxed">"${d.text}"</p>
                     </div>
                 `).join('');
-            }, (error) => console.error("Firestore error:", error));
+            }, (err) => console.error(err));
         }
+
+        // Global Image Error Handler
+        window.handleImgError = (img) => {
+            const parent = img.parentElement;
+            img.style.display = 'none';
+            const placeholder = document.createElement('div');
+            placeholder.className = 'img-error-placeholder';
+            placeholder.innerHTML = '<span>📷</span><span class="mt-2 text-[10px] uppercase tracking-tighter">תמונה בטעינה</span>';
+            parent.appendChild(placeholder);
+        };
     </script>
 </head>
 <body>
@@ -155,7 +154,8 @@
         <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" class="absolute inset-0 w-full h-full object-cover opacity-50 scale-105" alt="רקע">
         <div class="relative z-10 px-4">
             <div class="profile-image-container">
-                <img src="20190203_095231.jpg" alt="אפרים רוטמן ז"ל">
+                <!-- עדכון: שימוש בתמונה המקורית המבוקשת -->
+                <img src="IMG_3910_Original.jpg" alt="אפרים רוטמן ז"ל" onerror="handleImgError(this)">
             </div>
             <h1 class="memorial-title mb-2">אפרים רוטמן ז"ל</h1>
             <p class="text-2xl font-light opacity-90 mb-2 tracking-widest">1935 – 2019</p>
@@ -194,15 +194,15 @@
         <div class="max-w-6xl mx-auto text-center">
             <h2 class="section-title text-4xl font-bold text-stone-800">רגעים שזוכרים</h2>
             <div class="gallery-grid mt-12">
-                <div class="gallery-item"><img src="20240924_203950.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="20190203_105932.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="20140720_163638.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="IMG_3887.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="IMG_0521_8619.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="20160831_121253.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="20170729_140134.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="20190501_180028.jpg" alt="גלריה"></div>
-                <div class="gallery-item"><img src="FB_IMG_1566740074771.jpg" alt="גלריה"></div>
+                <div class="gallery-item"><img src="20240924_203950.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="20190203_105932.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="20140720_163638.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="IMG_3887.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="IMG_0521_8619.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="20160831_121253.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="20170729_140134.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="20190501_180028.jpg" onerror="handleImgError(this)"></div>
+                <div class="gallery-item"><img src="FB_IMG_1566740074771.jpg" onerror="handleImgError(this)"></div>
             </div>
         </div>
     </section>
