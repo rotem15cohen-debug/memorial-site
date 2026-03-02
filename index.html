@@ -15,251 +15,92 @@
         }
         .memorial-title {
             font-family: 'Amatic SC', cursive;
-            font-size: 5rem;
+            font-size: 5.5rem;
             line-height: 1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        /* אנימציית נר נשמה */
+        /* עיצוב המסגרת העגולה - התאמה לתמונה המקורית */
+        .profile-image-container {
+            width: 240px;
+            height: 240px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            border: 6px solid white;
+            background: #fff;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+            z-index: 20;
+        }
+        .profile-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* מיקום המצלמה על פניו של אפרים בתמונה הקבוצתית */
+            object-position: 50% 18%;
+            /* זום פנימה כדי שהפנים ימלאו את העיגול */
+            transform: scale(2.8); 
+        }
+        /* אנימציית נר */
         .flame {
-            width: 15px;
-            height: 25px;
+            width: 14px; height: 22px;
             background: linear-gradient(to bottom, #fff 0%, #ffeb3b 20%, #ff9800 50%, #f44336 80%);
             border-radius: 50% 50% 20% 20%;
             box-shadow: 0 0 15px #ff9800;
             animation: flicker 1.2s infinite alternate;
         }
-        .candle-body {
-            width: 30px;
-            height: 50px;
-            background: #f3f3f3;
-            border-radius: 4px;
-            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
-        }
+        .candle-body { width: 28px; height: 45px; background: #f3f3f3; border-radius: 3px; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.05); }
+        
         @keyframes flicker {
             0% { transform: scale(1) rotate(-1deg); opacity: 0.8; }
             100% { transform: scale(1.1) rotate(1deg); opacity: 1; }
         }
-        .section-title {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 2rem;
-        }
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            right: 0;
-            width: 60px;
-            height: 3px;
-            background-color: #b08d57;
-        }
-        .fade-in {
-            animation: fadeIn 1.5s ease-out;
-            animation-fill-mode: both;
-        }
+        .fade-in { animation: fadeIn 1.8s ease-out; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(25px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* עיצוב התמונה העגולה עם מיקוד לפנים */
-        .profile-image-container {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 25px;
-            border-radius: 50%;
-            border: 4px solid rgba(255, 255, 255, 0.8);
-            padding: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            overflow: hidden;
-            position: relative;
-        }
-        .profile-image-container img {
-            width: 100%;
-            height: 100%;
-            /* המאפיינים הבאים עוזרים להתמקד בפנים מתוך התמונה המקורית */
-            object-fit: cover;
-            object-position: center 25%; /* מסיט את התמונה למעלה לכיוון הפנים */
-            transform: scale(1.4); /* מגדיל את התמונה כדי להתמקד בפנים */
-            border-radius: 50%;
-            filter: contrast(1.1) brightness(1.05); /* חידוד ויזואלי קל */
-        }
-
-        /* נרות קטנים שנוספים */
-        .mini-candle-wrapper {
-            position: relative;
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 15px;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .mini-flame {
-            width: 8px;
-            height: 12px;
-            background: #ff9800;
-            border-radius: 50% 50% 20% 20%;
-            box-shadow: 0 0 8px #ff9800;
-            animation: flicker 0.8s infinite alternate;
-        }
-        .mini-body {
-            width: 16px;
-            height: 25px;
-            background: #e5e7eb;
-            border-radius: 2px;
-        }
-        .message-bubble {
-            position: absolute;
-            bottom: 45px;
-            background: white;
-            color: #333;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 11px;
-            white-space: nowrap;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 20;
-        }
-
-        #candleModal {
-            display: none;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
         }
     </style>
 </head>
-<body class="bg-[#fcfbf7]">
+<body>
 
-    <!-- Hero Section -->
-    <header class="relative h-screen flex items-center justify-center text-center text-white bg-black overflow-hidden">
-        <!-- תמונת רקע נוף -->
+    <header class="relative h-[90vh] flex items-center justify-center text-center text-white bg-stone-900 overflow-hidden">
+        <!-- תמונת רקע אווירתית -->
         <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" 
-             class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105" alt="רקע">
+             class="absolute inset-0 w-full h-full object-cover opacity-40 scale-105" alt="רקע">
+        <div class="absolute inset-0 bg-black/20 z-0"></div>
         
         <div class="relative z-10 px-4 fade-in">
-            <!-- תמונת הפרופיל העגולה עם הפנים של סבא -->
             <div class="profile-image-container">
-                <!-- שימוש בשם הקובץ שהעלית ל-GitHub -->
-                <img src="IMG_3910_Original.jpg" onerror="this.src='https://via.placeholder.com/200?text=%D7%AA%D7%9E%D7%95%D7%A0%D7%94'" alt="אפרים רוטמן ז"ל">
+                <!-- שימוש בתמונה המקורית כפי שהעלת ל-GitHub -->
+                <img src="IMG_3910_Original.jpg" alt="אפרים רוטמן ז"ל" onerror="this.src='https://via.placeholder.com/240?text=%D7%AA%D7%9E%D7%95%D7%A0%D7%94'">
             </div>
 
-            <h1 class="memorial-title mb-4">אפרים רוטמן ז"ל</h1>
-            <p class="text-2xl font-light opacity-90">1935 – 2019</p>
-            <p class="text-xl mt-4 font-light italic">"זכרך לא ימוש מלבנו לעד"</p>
+            <h1 class="memorial-title mb-2">אפרים רוטמן ז"ל</h1>
+            <p class="text-2xl font-light opacity-90 mb-8 tracking-wider">1935 – 2019</p>
             
-            <div class="mt-10 flex flex-col items-center">
+            <div class="flex flex-col items-center">
                 <div class="flame mb-1"></div>
                 <div class="candle-body"></div>
+                <p class="mt-6 text-sm tracking-[0.4em] opacity-50 font-light">נזכור לעולם</p>
             </div>
         </div>
     </header>
 
-    <!-- Navbar -->
-    <nav class="sticky top-0 bg-white/90 backdrop-blur-sm shadow-sm z-50 py-5 px-6 flex justify-center gap-10 text-sm font-bold text-gray-600">
-        <a href="#biography" class="hover:text-amber-700 transition">סיפורו</a>
-        <a href="#gallery" class="hover:text-amber-700 transition">גלריה</a>
-        <a href="#light-candle" class="hover:text-amber-700 transition text-amber-800 font-extrabold uppercase">הדלקת נר</a>
-    </nav>
-
-    <main class="max-w-4xl mx-auto px-6 py-24">
-        
-        <section id="biography" class="mb-32">
-            <h2 class="section-title text-4xl font-bold text-gray-800">סיפור חיים</h2>
-            <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 leading-relaxed">
-                <p class="text-xl text-gray-800 font-light">
-                    אפרים רוטמן ז"ל, איש של עקרונות ושל חום, הקדיש את חייו למשפחתו ולסובבים אותו. 
-                    חיוכו המאיר וטוב ליבו יזכרו לעד בקרב כל מי שזכה להכירו.
-                </p>
-                <p class="mt-4 text-gray-600">
-                    היה איש עבודה, אוהב ספר ואדם, שהשאיר אחריו מורשת של יושר ואהבה ללא תנאי.
-                </p>
+    <main class="max-w-4xl mx-auto px-6 py-24 text-center">
+        <div class="bg-white p-12 md:p-20 rounded-[3rem] shadow-sm border border-stone-100">
+            <h2 class="text-4xl font-bold mb-10 text-stone-800">לזכרו</h2>
+            <div class="space-y-6 text-xl leading-relaxed text-stone-600 font-light italic">
+                <p>"איש של משפחה, של ספר ושל עשייה."</p>
+                <p>"חיוכו המאיר וטוב ליבו ימשיכו ללוות אותנו בכל צעד ובכל פינה בלב."</p>
             </div>
-        </section>
-
-        <!-- Candle Lighting Section -->
-        <section id="light-candle" class="bg-stone-900 p-12 rounded-[3rem] text-white text-center shadow-2xl relative">
-            <h2 class="text-4xl font-bold mb-4">הדליקו נר לזכרו</h2>
-            <p class="text-stone-400 mb-8">כל לחיצה מוסיפה נר והקדשה אישית.</p>
-            
-            <div class="mb-8">
-                <span id="candleCount" class="text-5xl font-serif text-amber-500">0</span>
-            </div>
-
-            <button onclick="openCandleModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-10 py-5 rounded-full font-bold transition-all shadow-lg active:scale-95">
-                הדלקת נר נשמה
-            </button>
-
-            <div id="candleContainer" class="mt-12 flex flex-wrap justify-center items-end"></div>
-        </section>
+            <div class="mt-12 w-20 h-0.5 bg-stone-200 mx-auto"></div>
+        </div>
     </main>
 
-    <!-- Modal -->
-    <div id="candleModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <h3 class="text-2xl font-bold mb-2 text-gray-800">הקדשה אישית</h3>
-            <p class="text-gray-500 mb-4 text-sm">המילה שלכם תופיע מעל הנר</p>
-            <input type="text" id="candleMsg" maxlength="25" placeholder="למשל: תמיד בלב... (אופציונלי)" 
-                class="w-full p-4 border border-gray-200 rounded-xl mb-4 text-center focus:outline-none focus:ring-2 focus:ring-amber-500">
-            <div class="flex gap-3">
-                <button onclick="closeCandleModal()" class="flex-1 py-4 text-gray-400 font-bold">ביטול</button>
-                <button onclick="confirmAddCandle()" class="flex-1 py-4 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700">הדלקה</button>
-            </div>
-        </div>
-    </div>
-
-    <footer class="py-20 bg-gray-950 text-white text-center">
-        <div class="opacity-80 font-light">
-            <p class="text-2xl mb-2 font-serif">אפרים רוטמן ז"ל</p>
-            <p class="text-sm tracking-widest uppercase">ת.נ.צ.ב.ה</p>
-        </div>
+    <footer class="py-12 text-center text-stone-400 text-sm font-light">
+        <p>ת.נ.צ.ב.ה</p>
     </footer>
 
-    <script>
-        let count = parseInt(localStorage.getItem('memorial_candles_v3') || '0');
-        let candlesData = JSON.parse(localStorage.getItem('memorial_candles_data_v3') || '[]');
-        
-        const countDisplay = document.getElementById('candleCount');
-        const container = document.getElementById('candleContainer');
-
-        function initCandles() {
-            countDisplay.innerText = count;
-            candlesData.slice(-40).forEach(data => createCandleElement(data.message));
-        }
-
-        function createCandleElement(message) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'mini-candle-wrapper';
-            let html = '<div class="mini-flame"></div><div class="mini-body"></div>';
-            if (message && message.trim() !== "") {
-                html = `<div class="message-bubble">${message}</div>` + html;
-            }
-            wrapper.innerHTML = html;
-            container.appendChild(wrapper);
-        }
-
-        function openCandleModal() { document.getElementById('candleModal').style.display = 'flex'; }
-        function closeCandleModal() { 
-            document.getElementById('candleModal').style.display = 'none'; 
-            document.getElementById('candleMsg').value = '';
-        }
-
-        function confirmAddCandle() {
-            const msg = document.getElementById('candleMsg').value;
-            count++;
-            candlesData.push({ message: msg });
-            if (candlesData.length > 50) candlesData.shift();
-            localStorage.setItem('memorial_candles_v3', count);
-            localStorage.setItem('memorial_candles_data_v3', JSON.stringify(candlesData));
-            countDisplay.innerText = count;
-            createCandleElement(msg);
-            closeCandleModal();
-        }
-
-        window.onload = initCandles;
-    </script>
 </body>
 </html>
