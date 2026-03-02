@@ -22,7 +22,7 @@
 
         let currentUser = null;
 
-        // Rule 3: Auth Before Queries - חובה לבצע אימות לפני גישה ל-DB
+        // Rule 3: Auth Before Queries
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -38,21 +38,23 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                loadDedications(); // טעינת נתונים רק לאחר אימות
+                loadDedications();
             }
         });
 
         initAuth();
 
-        // UI Functions
+        // UI Functions - Fixed Modal Logic
         window.openDedicationModal = () => {
-            document.getElementById('dedication-modal').classList.remove('hidden');
-            document.getElementById('dedication-modal').classList.add('flex');
+            const modal = document.getElementById('dedication-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.style.opacity = '1'; }, 10);
         };
 
         window.closeDedicationModal = () => {
-            document.getElementById('dedication-modal').classList.add('hidden');
-            document.getElementById('dedication-modal').classList.remove('flex');
+            const modal = document.getElementById('dedication-modal');
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
         };
 
         window.handleLightCandle = async () => {
@@ -67,7 +69,7 @@
             submitBtn.innerText = "שומר...";
 
             try {
-                // Rule 1: Strict Paths - שימוש בנתיב המורשה
+                // Rule 1: Strict Paths
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'dedications'), {
                     text: text,
                     timestamp: serverTimestamp(),
@@ -77,15 +79,14 @@
                 textInput.value = "";
                 closeDedicationModal();
                 
-                // משוב ויזואלי למשתמש
                 const lightBtn = document.getElementById('light-btn');
-                const originalText = lightBtn.innerHTML;
+                const originalContent = lightBtn.innerHTML;
                 lightBtn.innerHTML = "🕯️ הנר הודלק בהצלחה";
-                lightBtn.classList.replace('bg-stone-800', 'bg-orange-600');
+                lightBtn.style.backgroundColor = "#ea580c"; // orange-600
                 
                 setTimeout(() => {
-                    lightBtn.innerHTML = originalText;
-                    lightBtn.classList.replace('bg-orange-600', 'bg-stone-800');
+                    lightBtn.innerHTML = originalContent;
+                    lightBtn.style.backgroundColor = ""; // reset to CSS class
                 }, 4000);
             } catch (e) {
                 console.error("Error adding document: ", e);
@@ -109,7 +110,7 @@
                 const docs = [];
                 snapshot.forEach(doc => docs.push(doc.data()));
                 
-                // Rule 2: No Complex Queries - מיון בזיכרון הלקוח
+                // Rule 2: Sort in memory
                 docs.sort((a, b) => {
                     const timeA = a.timestamp?.seconds || 0;
                     const timeB = b.timestamp?.seconds || 0;
@@ -161,6 +162,13 @@
         .gallery-item { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); aspect-ratio: 1/1; background-color: #f1f1f1; transition: transform 0.3s ease; }
         .gallery-item:hover { transform: translateY(-5px); }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Modal specific styles */
+        #dedication-modal { 
+            display: none; 
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
+        }
     </style>
 </head>
 <body>
@@ -240,7 +248,7 @@
     </section>
 
     <!-- Modal for Dedication -->
-    <div id="dedication-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] items-center justify-center">
+    <div id="dedication-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] items-center justify-center">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full mx-4 text-right border border-stone-100 fade-in">
             <h3 class="text-2xl font-bold mb-6 text-stone-800">הקדשה אישית</h3>
             <textarea id="dedication-text" rows="4" class="w-full border border-stone-200 rounded-2xl p-4 focus:ring-2 focus:ring-stone-400 outline-none resize-none mb-6 text-stone-700 font-light" placeholder="מה תרצו לכתוב לזכרו?"></textarea>
