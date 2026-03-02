@@ -22,7 +22,7 @@
 
         let currentUser = null;
 
-        // Auth Before Queries
+        // Rule 3: Auth Before Queries
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -44,21 +44,17 @@
 
         initAuth();
 
-        // UI Functions - Modal Interaction
+        // UI Functions - Fixed Modal Logic
         window.openDedicationModal = () => {
             const modal = document.getElementById('dedication-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => { modal.classList.add('opacity-100'); }, 10);
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.style.opacity = '1'; }, 10);
         };
 
         window.closeDedicationModal = () => {
             const modal = document.getElementById('dedication-modal');
-            modal.classList.remove('opacity-100');
-            setTimeout(() => { 
-                modal.classList.add('hidden'); 
-                modal.classList.remove('flex');
-            }, 300);
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
         };
 
         window.handleLightCandle = async () => {
@@ -73,6 +69,7 @@
             submitBtn.innerText = "שומר...";
 
             try {
+                // Rule 1: Strict Paths
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'dedications'), {
                     text: text,
                     timestamp: serverTimestamp(),
@@ -85,11 +82,11 @@
                 const lightBtn = document.getElementById('light-btn');
                 const originalContent = lightBtn.innerHTML;
                 lightBtn.innerHTML = "🕯️ הנר הודלק בהצלחה";
-                lightBtn.style.backgroundColor = "#ea580c";
+                lightBtn.style.backgroundColor = "#ea580c"; // orange-600
                 
                 setTimeout(() => {
                     lightBtn.innerHTML = originalContent;
-                    lightBtn.style.backgroundColor = "";
+                    lightBtn.style.backgroundColor = ""; // reset to CSS class
                 }, 4000);
             } catch (e) {
                 console.error("Error adding document: ", e);
@@ -113,6 +110,7 @@
                 const docs = [];
                 snapshot.forEach(doc => docs.push(doc.data()));
                 
+                // Rule 2: Sort in memory
                 docs.sort((a, b) => {
                     const timeA = a.timestamp?.seconds || 0;
                     const timeB = b.timestamp?.seconds || 0;
@@ -160,12 +158,17 @@
         .fade-in { animation: fadeIn 1.2s ease-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-        .gallery-item { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); aspect-ratio: 4/5; background-color: #f1f1f1; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; }
-        .gallery-item:hover { transform: scale(1.03) translateY(-5px); z-index: 10; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .gallery-item { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); aspect-ratio: 1/1; background-color: #f1f1f1; transition: transform 0.3s ease; }
+        .gallery-item:hover { transform: translateY(-5px); }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        #dedication-modal { transition: opacity 0.3s ease; }
+        /* Modal specific styles */
+        #dedication-modal { 
+            display: none; 
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
+        }
     </style>
 </head>
 <body>
@@ -175,7 +178,7 @@
         <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" class="absolute inset-0 w-full h-full object-cover opacity-50 scale-105" alt="רקע">
         <div class="relative z-10 px-4 fade-in">
             <div class="profile-image-container">
-                <img src="20190203_095231.jpg" alt="אפרים רוטמן ז"ל">
+                <img src="IMG_3910_Original.jpg" alt="אפרים רוטמן ז"ל" onerror="this.src='https://via.placeholder.com/260?text=%D7%AA%D7%9E%D7%95%D7%A0%D7%94'">
             </div>
             <h1 class="memorial-title mb-2">אפרים רוטמן ז"ל</h1>
             <p class="text-2xl font-light opacity-90 mb-2 tracking-widest">1935 – 2019</p>
@@ -209,20 +212,14 @@
         </div>
     </section>
 
-    <!-- Gallery Section (All text removed from images) -->
+    <!-- Gallery Section -->
     <section id="gallery" class="bg-stone-50 py-24 px-6">
-        <div class="max-w-6xl mx-auto text-center">
+        <div class="max-w-5xl mx-auto text-center">
             <h2 class="section-title text-4xl font-bold text-stone-800">רגעים שזוכרים</h2>
             <div class="gallery-grid mt-12">
-                <div class="gallery-item"><img src="20240924_203950.jpg"></div>
-                <div class="gallery-item"><img src="20190203_105932.jpg"></div>
-                <div class="gallery-item"><img src="20140720_163638.jpg"></div>
-                <div class="gallery-item"><img src="IMG_3887.jpg"></div>
-                <div class="gallery-item"><img src="IMG_0521_8619.jpg"></div>
-                <div class="gallery-item"><img src="20160831_121253.jpg"></div>
-                <div class="gallery-item"><img src="20170729_140134.jpg"></div>
-                <div class="gallery-item"><img src="20190501_180028.jpg"></div>
-                <div class="gallery-item"><img src="FB_IMG_1566740074771.jpg"></div>
+                <div class="gallery-item"><img src="photo1.jpg" alt="זיכרון" onerror="this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-stone-300 italic text-xs\'>הוסיפו תמונה 1</div>'"></div>
+                <div class="gallery-item"><img src="photo2.jpg" alt="זיכרון" onerror="this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-stone-300 italic text-xs\'>הוסיפו תמונה 2</div>'"></div>
+                <div class="gallery-item"><img src="photo3.jpg" alt="זיכרון" onerror="this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-stone-300 italic text-xs\'>הוסיפו תמונה 3</div>'"></div>
             </div>
         </div>
     </section>
@@ -251,7 +248,7 @@
     </section>
 
     <!-- Modal for Dedication -->
-    <div id="dedication-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden opacity-0 items-center justify-center">
+    <div id="dedication-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] items-center justify-center">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full mx-4 text-right border border-stone-100 fade-in">
             <h3 class="text-2xl font-bold mb-6 text-stone-800">הקדשה אישית</h3>
             <textarea id="dedication-text" rows="4" class="w-full border border-stone-200 rounded-2xl p-4 focus:ring-2 focus:ring-stone-400 outline-none resize-none mb-6 text-stone-700 font-light" placeholder="מה תרצו לכתוב לזכרו?"></textarea>
