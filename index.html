@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לזכרו של אפרים רוטמן ז"ל</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;400;700&family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #fcfbf7;
+            color: #333;
+            scroll-behavior: smooth;
+        }
+        .memorial-title {
+            font-family: 'Amatic SC', cursive;
+            font-size: 5rem;
+            line-height: 1;
+        }
+        /* אנימציית נר נשמה */
+        .flame {
+            width: 15px;
+            height: 25px;
+            background: linear-gradient(to bottom, #fff 0%, #ffeb3b 20%, #ff9800 50%, #f44336 80%);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 15px #ff9800;
+            animation: flicker 1.2s infinite alternate;
+        }
+        .candle-body {
+            width: 30px;
+            height: 50px;
+            background: #f3f3f3;
+            border-radius: 4px;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
+        }
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-1deg); opacity: 0.8; }
+            100% { transform: scale(1.1) rotate(1deg); opacity: 1; }
+        }
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 0;
+            width: 60px;
+            height: 3px;
+            background-color: #b08d57;
+        }
+        .gallery-img {
+            transition: all 0.5s ease;
+            filter: grayscale(100%);
+        }
+        .gallery-img:hover {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+        .fade-in {
+            animation: fadeIn 1.5s ease-out;
+            animation-fill-mode: both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* עיצוב ציר זמן */
+        .timeline-container {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 18px; /* Alignment for mobile/rtl */
+            width: 2px;
+            background: #e5e7eb;
+        }
+        @media (min-width: 768px) {
+            .timeline-container::before {
+                right: 50%;
+                margin-right: -1px;
+            }
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 50px;
+        }
+        .timeline-dot {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            width: 18px;
+            height: 18px;
+            background: #b08d57;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 2px #b08d57;
+            z-index: 10;
+        }
+        @media (min-width: 768px) {
+            .timeline-dot {
+                right: 50%;
+                margin-right: -9px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#fcfbf7]">
+
+    <!-- Hero Section -->
+    <header class="relative h-screen flex items-center justify-center text-center text-white bg-black overflow-hidden">
+        <!-- תמונת רקע חדשה - נוף יער ירוק -->
+        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" 
+             class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105" alt="נוף יער ירוק">
+        
+        <div class="relative z-10 px-4 fade-in">
+            <h1 class="memorial-title mb-4">אפרים רוטמן ז"ל</h1>
+            <p class="text-2xl font-light opacity-90">1935 – 2019</p>
+            <p class="text-xl mt-4 font-light italic">"איש חיל, אוהב אדם ורודף שלום"</p>
+            
+            <div class="mt-12 flex flex-col items-center">
+                <div class="flame mb-1"></div>
+                <div class="candle-body"></div>
+                <p class="mt-4 text-sm tracking-widest uppercase opacity-70 text-white">יהי זכרו ברוך</p>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+    </header>
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 bg-white/90 backdrop-blur-sm shadow-sm z-50 py-5 px-6 flex justify-center gap-6 md:gap-10 text-xs md:text-sm font-bold text-gray-600 tracking-wide">
+        <a href="#biography" class="hover:text-amber-700 transition">סיפורו</a>
+        <a href="#timeline" class="hover:text-amber-700 transition">ציר זמן</a>
+        <a href="#gallery" class="hover:text-amber-700 transition">גלריה</a>
+        <a href="#memories" class="hover:text-amber-700 transition text-amber-800">זיכרונות</a>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-24">
+        
+        <!-- Biography -->
+        <section id="biography" class="mb-32">
+            <h2 class="section-title text-4xl font-bold text-gray-800">סיפור חיים</h2>
+            <div class="prose prose-lg text-gray-700 leading-relaxed max-w-none bg-white p-10 rounded-3xl shadow-sm border border-gray-100">
+                <p class="mb-6 text-xl text-gray-800 leading-snug font-light">
+                    אפרים רוטמן ז"ל, איש של עקרונות ושל חום, הקדיש את חייו למשפחתו ולסובבים אותו.
+                </p>
+                <p class="mb-4">
+                    סיפורו של אפרים הוא סיפור של דור שלם - דור של בוני הארץ, של עבודה קשה ושל ערכים שלא נס ליחם. הוא ידע למצוא את הטוב בכל אדם ואת היופי בכל רגע פשוט.
+                </p>
+                <p>
+                    כאן המקום לפרט על תחנות חייו: ילדותו, פועלו המקצועי, תחביביו והמורשת שהשאיר אחריו לילדיו ולנכדיו.
+                </p>
+                <div class="mt-8 pt-6 border-t border-gray-100 font-bold text-amber-800 italic text-center text-2xl font-serif">
+                    "החיוך שלו האיר כל חדר אליו נכנס."
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline Section -->
+        <section id="timeline" class="mb-32">
+            <h2 class="section-title text-4xl font-bold text-gray-800">תחנות בחייו</h2>
+            <div class="timeline-container mt-12">
+                
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item flex flex-col md:flex-row justify-between items-center w-full">
+                    <div class="timeline-dot"></div>
+                    <div class="hidden md:block w-[45%]"></div>
+                    <div class="w-full md:w-[45%] pr-12 md:pr-0 text-right">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
+                            <span class="text-amber-700 font-bold text-xl">1935</span>
+                            <h3 class="text-lg font-bold mt-1">לידה</h3>
+                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">אפרים נולד בתאריך... במקום...</p>
+                            <div class="mt-4 aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                                <div class="w-full h-full flex items-center justify-center text-gray-300 italic text-xs">כאן תוכל להוסיף תמונת ילדות</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item flex flex-col md:flex-row-reverse justify-between items-center w-full">
+                    <div class="timeline-dot"></div>
+                    <div class="hidden md:block w-[45%]"></div>
+                    <div class="w-full md:w-[45%] pr-12 md:pr-0 text-right md:text-left">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
+                            <span class="text-amber-700 font-bold text-xl">שנות ה-50</span>
+                            <h3 class="text-lg font-bold mt-1">הקמת המשפחה</h3>
+                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">תקופה משמעותית של בנייה ועשייה...</p>
+                            <div class="mt-4 aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                                <div class="w-full h-full flex items-center justify-center text-gray-300 italic text-xs">כאן תוכל להוסיף תמונה מהתקופה</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Gallery -->
+        <section id="gallery" class="mb-32">
+            <h2 class="section-title text-4xl font-bold text-gray-800">גלריית רגעים</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <div class="aspect-[4/5] bg-gray-200 rounded-2xl overflow-hidden shadow-md">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400" class="w-full h-full object-cover gallery-img" alt="תמונה 1">
+                </div>
+                <div class="aspect-[4/5] bg-gray-200 rounded-2xl overflow-hidden shadow-md">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400" class="w-full h-full object-cover gallery-img" alt="תמונה 2">
+                </div>
+                <div class="aspect-[4/5] bg-gray-200 rounded-2xl overflow-hidden shadow-md">
+                    <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=400" class="w-full h-full object-cover gallery-img" alt="תמונה 3">
+                </div>
+            </div>
+        </section>
+
+        <!-- Memories -->
+        <section id="memories" class="bg-amber-50/40 p-10 md:p-16 rounded-[3rem] border border-amber-100 shadow-inner">
+            <h2 class="section-title text-4xl font-bold text-gray-800">כותבים לזכרו</h2>
+            <p class="text-gray-600 mb-10 text-xl italic">ספרו סיפור, העלו זיכרון או הקדישו מילים לסבא אפרים ז"ל.</p>
+            
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden min-h-[600px] border border-gray-100">
+                <iframe 
+                    id="memoriesForm"
+                    src="https://docs.google.com/forms/d/e/1FAIpQLScyW6-G_X_YOUR_FORM_ID/viewform?embedded=true" 
+                    width="100%" 
+                    height="650" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0">טוען...</iframe>
+            </div>
+
+            <div class="mt-12 flex flex-col items-center gap-6">
+                <button onclick="shareMemory()" class="bg-emerald-600 text-white px-10 py-5 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 transform hover:-translate-y-1">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.161 1.237 8.404 3.48s3.48 5.228 3.48 8.404c0 6.556-5.332 11.888-11.888 11.888-2.016 0-3.991-.512-5.742-1.487l-6.141 1.612zm6.305-16.144c-.161-.358-.33-.366-.484-.372-.126-.005-.27-.005-.414-.005-.144 0-.378.054-.576.27-.198.216-.756.738-.756 1.799s.774 2.088.882 2.232c.108.144 1.521 2.322 3.684 3.257.514.222.915.355 1.227.454.516.164.986.141 1.357.086.414-.061 1.275-.521 1.455-1.023.18-.502.18-.933.126-1.023-.054-.09-.198-.144-.414-.252s-1.275-.629-1.472-.701-.342-.108-.486.108c-.144.216-.558.701-.684.846-.126.144-.252.162-.468.054s-.911-.336-1.735-1.071c-.642-.572-1.074-1.279-1.2-1.494-.126-.216-.013-.333.095-.44l.324-.378c.108-.126.144-.216.216-.36s.036-.27-.018-.378z"/></svg>
+                    שתפו זיכרון בוואטסאפ המשפחתי
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-20 bg-gray-950 text-white text-center">
+        <div class="opacity-80 font-light">
+            <p class="text-2xl mb-2">לזכרו של אפרים רוטמן ז"ל</p>
+            <p class="text-sm tracking-widest uppercase">1935 – 2019</p>
+        </div>
+        <div class="mt-10 text-[10px] opacity-30 tracking-[0.5em]">ת.נ.צ.ב.ה</div>
+    </footer>
+
+    <script>
+        function shareMemory() {
+            const url = window.location.href;
+            const text = encodeURIComponent("רציתי לשתף זיכרון על אפרים רוטמן ז\"ל מתוך אתר ההנצחה: " + url);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section, .timeline-item').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
