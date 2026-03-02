@@ -6,139 +6,165 @@
     <title>לזכרו של אפרים רוטמן ז"ל</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;400;700&family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Firebase Configuration
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'memorial-ephraim';
+
+        // State variables
+        let currentUser = null;
+
+        // Rule 3: Auth Before Queries
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth error:", error);
+            }
+        };
+
+        // Listen for auth state and ONLY THEN start firestore listeners
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadDedications(); // Start fetching only after auth is confirmed
+            }
+        });
+
+        initAuth();
+
+        // UI Functions
+        window.openDedicationModal = () => {
+            document.getElementById('dedication-modal').style.display = 'flex';
+        };
+
+        window.closeDedicationModal = () => {
+            document.getElementById('dedication-modal').style.display = 'none';
+        };
+
+        window.handleLightCandle = async () => {
+            if (!currentUser) {
+                console.error("User not authenticated yet");
+                return;
+            }
+            
+            const text = document.getElementById('dedication-text').value.trim();
+            if (!text) return;
+
+            const submitBtn = document.getElementById('submit-dedication-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "שומר...";
+
+            try {
+                // Rule 1: Strict Paths
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'dedications'), {
+                    text: text,
+                    timestamp: serverTimestamp(),
+                    userId: currentUser.uid
+                });
+                
+                document.getElementById('dedication-text').value = "";
+                closeDedicationModal();
+                
+                const lightBtn = document.getElementById('light-btn');
+                lightBtn.innerHTML = "🕯️ הנר הודלק בהצלחה";
+                lightBtn.classList.replace('bg-stone-800', 'bg-orange-600');
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "הדלקת נר";
+            }
+        };
+
+        // Load and Listen to Dedications
+        function loadDedications() {
+            if (!currentUser) return;
+
+            // Rule 1 & Rule 2: Simple query, sorting in JS
+            const dedicationsRef = collection(db, 'artifacts', appId, 'public', 'data', 'dedications');
+            const q = query(dedicationsRef);
+            
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('dedications-list');
+                const countBadge = document.getElementById('candle-count');
+                list.innerHTML = '';
+                
+                const docs = [];
+                snapshot.forEach(doc => docs.push(doc.data()));
+                
+                // Rule 2: Sort in memory to avoid index requirements
+                docs.sort((a, b) => {
+                    const timeA = a.timestamp?.seconds || 0;
+                    const timeB = b.timestamp?.seconds || 0;
+                    return timeB - timeA;
+                });
+
+                countBadge.innerText = docs.length;
+
+                if (docs.length === 0) {
+                    list.innerHTML = '<p class="text-stone-400 italic">היו הראשונים להדליק נר...</p>';
+                    return;
+                }
+
+                docs.forEach(data => {
+                    const div = document.createElement('div');
+                    div.className = "bg-white p-4 rounded-xl shadow-sm border border-stone-100 text-right fade-in mb-4";
+                    const dateStr = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString('he-IL') : 'זה עתה';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-orange-500 text-sm">🕯️</span>
+                            <span class="text-xs text-stone-400">${dateStr}</span>
+                        </div>
+                        <p class="text-stone-700 font-light italic">"${data.text}"</p>
+                    `;
+                    list.appendChild(div);
+                });
+            }, (error) => {
+                console.error("Listener error:", error);
+                const list = document.getElementById('dedications-list');
+                list.innerHTML = '<p class="text-red-400 text-sm">שגיאה בטעינת הקדשות. אנא נסו לרענן.</p>';
+            });
+        }
+    </script>
+
     <style>
-        body {
-            font-family: 'Assistant', sans-serif;
-            background-color: #fcfbf7;
-            color: #333;
-            scroll-behavior: smooth;
-        }
-        .memorial-title {
-            font-family: 'Amatic SC', cursive;
-            font-size: 5.5rem;
-            line-height: 1;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        /* תמונת פרופיל עגולה עם מסגרת */
-        .profile-image-container {
-            width: 260px; 
-            height: 260px;
-            margin: 0 auto 25px;
-            border-radius: 50%;
-            border: 4px solid white;
-            background: #ffffff; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            overflow: hidden;
-            position: relative;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .profile-image-container img {
-            width: 100%; 
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* אנימציית נר נשמה */
-        .flame {
-            width: 15px; height: 25px;
-            background: linear-gradient(to bottom, #fff 0%, #ffeb3b 20%, #ff9800 50%, #f44336 80%);
-            border-radius: 50% 50% 20% 20%;
-            box-shadow: 0 0 15px #ff9800;
-            animation: flicker 1.2s infinite alternate;
-        }
+        body { font-family: 'Assistant', sans-serif; background-color: #fcfbf7; color: #333; scroll-behavior: smooth; }
+        .memorial-title { font-family: 'Amatic SC', cursive; font-size: 5.5rem; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .profile-image-container { width: 260px; height: 260px; margin: 0 auto 25px; border-radius: 50%; border: 4px solid white; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; z-index: 20; }
+        .profile-image-container img { width: 100%; height: 100%; object-fit: cover; }
+        .flame { width: 15px; height: 25px; background: linear-gradient(to bottom, #fff 0%, #ffeb3b 20%, #ff9800 50%, #f44336 80%); border-radius: 50% 50% 20% 20%; box-shadow: 0 0 15px #ff9800; animation: flicker 1.2s infinite alternate; }
         .candle-body { width: 30px; height: 50px; background: #f3f3f3; border-radius: 4px; box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05); }
-        
-        @keyframes flicker {
-            0% { transform: scale(1) rotate(-1deg); opacity: 0.8; }
-            100% { transform: scale(1.1) rotate(1deg); opacity: 1; }
-        }
-
-        .section-title {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 2rem;
-        }
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            right: 0;
-            width: 60px;
-            height: 3px;
-            background-color: #b08d57;
-        }
-
+        @keyframes flicker { 0% { transform: scale(1) rotate(-1deg); opacity: 0.8; } 100% { transform: scale(1.1) rotate(1deg); opacity: 1; } }
+        .section-title { position: relative; display: inline-block; margin-bottom: 2rem; }
+        .section-title::after { content: ''; position: absolute; bottom: -8px; right: 0; width: 60px; height: 3px; background-color: #b08d57; }
         .fade-in { animation: fadeIn 1.5s ease-out forwards; opacity: 0; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* עיצוב ציר הזמן */
-        .timeline-container {
-            position: relative;
-            padding: 20px 0;
-        }
-        .timeline-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 18px;
-            width: 2px;
-            background: #e5e7eb;
-        }
-        @media (min-width: 768px) {
-            .timeline-container::before {
-                right: 50%;
-                margin-right: -1px;
-            }
-        }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 50px;
-        }
-        .timeline-dot {
-            position: absolute;
-            right: 10px;
-            top: 20px;
-            width: 18px;
-            height: 18px;
-            background: #b08d57;
-            border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 0 0 2px #b08d57;
-            z-index: 10;
-        }
-        @media (min-width: 768px) {
-            .timeline-dot {
-                right: 50%;
-                margin-right: -9px;
-            }
-        }
-
-        #dedication-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .gallery-item { position: relative; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); aspect-ratio: 1/1; background-color: #f1f1f1; transition: transform 0.3s ease; }
+        .gallery-item:hover { transform: translateY(-5px); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        #dedication-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <!-- Header Section -->
     <header class="relative h-screen flex items-center justify-center text-center text-white bg-black overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" 
-             class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105" alt="רקע יער">
-        
+        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071" class="absolute inset-0 w-full h-full object-cover opacity-60 scale-105" alt="רקע">
         <div class="relative z-10 px-4 fade-in">
             <div class="profile-image-container">
                 <img src="IMG_3910_Original.jpg" alt="אפרים רוטמן ז"ל" onerror="this.src='https://via.placeholder.com/260?text=%D7%AA%D7%9E%D7%95%D7%A0%D7%94'">
@@ -146,11 +172,9 @@
             <h1 class="memorial-title mb-2">אפרים רוטמן ז"ל</h1>
             <p class="text-2xl font-light opacity-90 mb-2 tracking-wider">1935 – 2019</p>
             <p class="text-xl font-light italic opacity-70 mb-8">"זכרו חקוק בלבנו לעד"</p>
-            
             <div class="flex flex-col items-center">
                 <div class="flame mb-1"></div>
                 <div class="candle-body"></div>
-                <!-- הוסר המשפט "נזכור לעולם" לבקשת המשתמש -->
             </div>
         </div>
     </header>
@@ -159,7 +183,6 @@
     <nav class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-50 border-b border-stone-100 py-5">
         <div class="max-w-5xl mx-auto flex justify-around font-bold text-gray-600 text-sm">
             <a href="#biography" class="hover:text-amber-800 transition">סיפורו</a>
-            <a href="#timeline" class="hover:text-amber-800 transition">ציר זמן</a>
             <a href="#gallery" class="hover:text-amber-800 transition">גלריה</a>
             <a href="#candle" class="hover:text-amber-800 transition">נר לזכרו</a>
         </div>
@@ -169,99 +192,20 @@
     <section id="biography" class="max-w-4xl mx-auto px-6 py-24 text-right">
         <h2 class="section-title text-4xl font-bold text-gray-800">סיפור חיים</h2>
         <div class="prose prose-lg text-gray-700 leading-relaxed bg-white p-10 rounded-3xl shadow-sm border border-gray-100 fade-in">
-            <p class="mb-6 text-xl text-gray-800 leading-snug font-light">
-                אפרים רוטמן ז"ל, איש של עקרונות ושל חום, הקדיש את חייו למשפחתו ולסובבים אותו.
-            </p>
-            <p class="mb-4">
-                סיפורו של אפרים הוא סיפור של דור שלם - דור של בוני הארץ, של עבודה קשה ושל ערכים שלא נס ליחם. הוא ידע למצוא את הטוב בכל אדם ואת היופי בכל רגע פשוט.
-            </p>
-            <div class="mt-8 pt-6 border-t border-gray-100 font-bold text-amber-800 italic text-center text-2xl">
-                "החיוך שלו האיר כל חדר אליו נכנס."
-            </div>
-        </div>
-    </section>
-
-    <!-- Timeline Section -->
-    <section id="timeline" class="bg-white py-24 px-6">
-        <div class="max-w-4xl mx-auto text-right">
-            <h2 class="section-title text-4xl font-bold text-gray-800">תחנות בחייו</h2>
-            
-            <div class="timeline-container mt-12">
-                <!-- Item 1 - ימין -->
-                <div class="timeline-item flex flex-col md:flex-row justify-between items-center w-full">
-                    <div class="timeline-dot"></div>
-                    <div class="hidden md:block w-[45%]"></div>
-                    <div class="w-full md:w-[45%] pr-12 md:pr-0 text-right">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
-                            <span class="text-amber-700 font-bold text-xl">1935</span>
-                            <h3 class="text-lg font-bold mt-1">לידה וילדות</h3>
-                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">נולד בימים של הקמת היישוב, גדל על ברכי הציונות ואהבת האדם.</p>
-                            <div class="mt-4 aspect-video bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center text-stone-300 italic text-xs border border-dashed border-stone-200">
-                                [כאן תהיה תמונת ילדות]
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Item 2 - שמאל -->
-                <div class="timeline-item flex flex-col md:flex-row-reverse justify-between items-center w-full">
-                    <div class="timeline-dot"></div>
-                    <div class="hidden md:block w-[45%]"></div>
-                    <div class="w-full md:w-[45%] pr-12 md:pr-0 text-right md:text-left">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
-                            <span class="text-amber-700 font-bold text-xl">שנות ה-50</span>
-                            <h3 class="text-lg font-bold mt-1">הקמת המשפחה</h3>
-                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">תקופה משמעותית של בנייה ועשייה, דור של בוני הארץ.</p>
-                            <div class="mt-4 aspect-video bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center text-stone-300 italic text-xs border border-dashed border-stone-200">
-                                [כאן תהיה תמונת הקמת הבית]
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 3 - ימין -->
-                <div class="timeline-item flex flex-col md:flex-row justify-between items-center w-full">
-                    <div class="timeline-dot"></div>
-                    <div class="hidden md:block w-[45%]"></div>
-                    <div class="w-full md:w-[45%] pr-12 md:pr-0 text-right">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
-                            <span class="text-amber-700 font-bold text-xl">מורשת וסבאות</span>
-                            <h3 class="text-lg font-bold mt-1">סבאות מאושרת</h3>
-                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">היה סבא מסור שתמיד מצא זמן לסיפור ועצה טובה. אהבתו לספר ליוותה אותו תמיד.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Item 4 - שמאל -->
-                <div class="timeline-item flex flex-col md:flex-row-reverse justify-between items-center w-full">
-                    <div class="timeline-dot"></div>
-                    <div class="hidden md:block w-[45%]"></div>
-                    <div class="w-full md:w-[45%] pr-12 md:pr-0 text-right md:text-left">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition">
-                            <span class="text-amber-700 font-bold text-xl">2019</span>
-                            <h3 class="text-lg font-bold mt-1">פרידה</h3>
-                            <p class="text-gray-600 mt-2 text-sm leading-relaxed">השלמת מסע חיים מלא בתוכן, אהבה ומורשת שתלווה אותנו לנצח.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <p class="mb-6 text-xl text-gray-800 leading-snug font-light">אפרים רוטמן ז"ל, איש של עקרונות ושל חום, הקדיש את חייו למשפחתו ולסובבים אותו.</p>
+            <p class="mb-4">סיפורו של אפרים הוא סיפור של דור שלם - דור של בוני הארץ, של עבודה קשה ושל ערכים שלא נס ליחם. הוא ידע למצוא את הטוב בכל אדם ואת היופי בכל רגע פשוט.</p>
+            <div class="mt-8 pt-6 border-t border-gray-100 font-bold text-amber-800 italic text-center text-2xl">"החיוך שלו האיר כל חדר אליו נכנס."</div>
         </div>
     </section>
 
     <!-- Gallery Section -->
     <section id="gallery" class="bg-stone-50 py-24 px-6">
-        <div class="max-w-5xl mx-auto text-center">
+        <div class="max-w-6xl mx-auto text-center">
             <h2 class="section-title text-4xl font-bold text-gray-800">גלריית רגעים</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-                <div class="aspect-[4/5] bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden group">
-                    <div class="w-full h-full flex items-center justify-center text-stone-300 italic grayscale hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">[תמונה 1]</div>
-                </div>
-                <div class="aspect-[4/5] bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden group">
-                    <div class="w-full h-full flex items-center justify-center text-stone-300 italic grayscale hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">[תמונה 2]</div>
-                </div>
-                <div class="aspect-[4/5] bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden group">
-                    <div class="w-full h-full flex items-center justify-center text-stone-300 italic grayscale hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105">[תמונה 3]</div>
-                </div>
+            <div class="gallery-grid mt-10">
+                <div class="gallery-item"><img src="photo1.jpg" alt="זיכרון" onerror="this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-stone-300 italic\'>הוסיפי תמונה</div>'"></div>
+                <div class="gallery-item"><img src="photo2.jpg" alt="זיכרון" onerror="this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-stone-300 italic\'>הוסיפי תמונה</div>'"></div>
+                <div class="gallery-item"><img src="photo3.jpg" alt="זיכרון" onerror="this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-stone-300 italic\'>הוסיפי תמונה</div>'"></div>
             </div>
         </div>
     </section>
@@ -270,21 +214,19 @@
     <section id="candle" class="py-24 px-6 bg-white text-center border-t border-stone-100">
         <div class="max-w-md mx-auto">
             <h2 class="text-3xl font-bold mb-4 text-stone-800">נר לזכרו</h2>
-            <p class="text-stone-500 mb-10">הדליקו נר והקדישו מילה לזכר נשמתו של אפרים</p>
+            <p class="text-stone-500 mb-6">עד כה הודלקו <span id="candle-count" class="font-bold text-orange-600">0</span> נרות</p>
             
-            <div id="active-candle" class="hidden mb-12 fade-in">
-                <div class="flex flex-col items-center">
-                    <div class="flame mb-1"></div>
-                    <div class="candle-body"></div>
-                    <p class="mt-6 text-orange-600 font-bold text-xl animate-pulse tracking-wide">יהי זכרו ברוך</p>
-                    <div id="user-dedication-display" class="mt-4 p-4 bg-stone-50 rounded-xl border border-stone-100 italic text-stone-600 max-w-xs mx-auto hidden"></div>
+            <button id="light-btn" onclick="openDedicationModal()" class="bg-stone-800 text-white px-12 py-5 rounded-full text-lg font-medium hover:bg-stone-700 transition-all shadow-xl flex items-center justify-center mx-auto gap-3 mb-16">
+                <span class="text-2xl">🕯️</span>
+                <span>הדלקת נר והקדשה</span>
+            </button>
+
+            <div class="text-right">
+                <h3 class="text-xl font-bold mb-6 text-stone-800 border-b pb-2">הקדשות מהלב</h3>
+                <div id="dedications-list" class="space-y-4">
+                    <p class="text-stone-400 italic">טוען הקדשות...</p>
                 </div>
             </div>
-
-            <button id="light-btn" onclick="openDedicationModal()" class="bg-stone-800 text-white px-12 py-5 rounded-full text-lg font-medium hover:bg-stone-700 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center mx-auto gap-3 active:scale-95">
-                <span class="text-2xl">🕯️</span>
-                <span>לחצו להדלקת נר לזכרו</span>
-            </button>
         </div>
     </section>
 
@@ -292,10 +234,9 @@
     <div id="dedication-modal">
         <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-right">
             <h3 class="text-2xl font-bold mb-4 text-stone-800">הקדשה אישית</h3>
-            <p class="text-stone-500 mb-6 text-sm">מוזמנים לכתוב מילה לזכרו של אפרים לפני הדלקת הנר</p>
-            <textarea id="dedication-text" rows="3" class="w-full border border-stone-200 rounded-xl p-4 focus:ring-2 focus:ring-stone-400 outline-none resize-none mb-6" placeholder="כתבו כאן..."></textarea>
+            <textarea id="dedication-text" rows="3" class="w-full border border-stone-200 rounded-xl p-4 focus:ring-2 focus:ring-stone-400 outline-none resize-none mb-6" placeholder="כתבו כאן משהו לזכרו..."></textarea>
             <div class="flex gap-3">
-                <button onclick="handleLightCandle()" class="flex-1 bg-stone-800 text-white py-3 rounded-full font-bold hover:bg-stone-700 transition-colors">הדלקת נר</button>
+                <button id="submit-dedication-btn" onclick="handleLightCandle()" class="flex-1 bg-stone-800 text-white py-3 rounded-full font-bold hover:bg-stone-700 transition-colors">הדלקת נר</button>
                 <button onclick="closeDedicationModal()" class="flex-1 border border-stone-200 text-stone-400 py-3 rounded-full font-bold hover:bg-stone-50 transition-colors">ביטול</button>
             </div>
         </div>
@@ -306,49 +247,7 @@
             <p class="text-2xl mb-2">לזכרו של אפרים רוטמן ז"ל</p>
             <p class="text-sm tracking-widest uppercase opacity-50">1935 – 2019</p>
         </div>
-        <div class="mt-10 text-[10px] opacity-30 tracking-[0.5em]">ת.נ.צ.ב.ה</div>
     </footer>
 
-    <script>
-        function openDedicationModal() {
-            document.getElementById('dedication-modal').style.display = 'flex';
-        }
-
-        function closeDedicationModal() {
-            document.getElementById('dedication-modal').style.display = 'none';
-        }
-
-        function handleLightCandle() {
-            const btn = document.getElementById('light-btn');
-            const activeCandle = document.getElementById('active-candle');
-            const dedicationText = document.getElementById('dedication-text').value;
-            const displayBox = document.getElementById('user-dedication-display');
-            
-            closeDedicationModal();
-            
-            btn.style.opacity = '0';
-            setTimeout(() => {
-                btn.style.display = 'none';
-                activeCandle.classList.remove('hidden');
-                
-                if (dedicationText.trim() !== "") {
-                    displayBox.innerText = `"${dedicationText}"`;
-                    displayBox.classList.remove('hidden');
-                }
-            }, 300);
-        }
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
-                    entry.target.style.opacity = "1";
-                    entry.target.style.transform = "translateY(0)";
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.fade-in, .timeline-item').forEach(el => observer.observe(el));
-    </script>
 </body>
 </html>
